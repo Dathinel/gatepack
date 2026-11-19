@@ -1,0 +1,13 @@
+{
+  "name": "gatepack",
+  "version": "0.1.0",
+  "description": "Check-before-you-publish gates for KDP books and short videos: metadata, covers, page counts, EPUB, dead air, frozen frames, loudness, clipped endings.",
+  "author": {
+    "name": "Essa",
+    "url": "https://github.com/Essa366"
+  },
+  "homepage": "https://github.com/Essa366/gatepack",
+  "repository": "https://github.com/Essa366/gatepack",
+  "license": "MIT",
+  "keywords": ["kdp", "epub", "ffmpeg", "loudness", "preflight", "publishing"]
+}

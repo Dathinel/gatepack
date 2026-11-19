@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gatepack"
+version = "0.1.0"
+description = "Check-before-you-publish gates for KDP books and short videos, for people and AI agents."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{ name = "Essa" }]
+keywords = ["kdp", "self-publishing", "epub", "ffmpeg", "loudness", "preflight", "lint", "claude-code", "agents"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Multimedia :: Sound/Audio :: Analysis",
+  "Topic :: Multimedia :: Video",
+  "Topic :: Software Development :: Quality Assurance",
+]
+dependencies = ["pypdf>=4"]
+
+[project.optional-dependencies]
+cover = ["Pillow>=10"]
+dev = ["pytest>=8", "Pillow>=10"]
+
+[project.scripts]
+gatepack = "gatepack.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Essa366/gatepack"
+Issues = "https://github.com/Essa366/gatepack/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"

@@ -1,0 +1,15 @@
+{
+  "name": "gatepack",
+  "description": "Check-before-you-publish gates for KDP books and short videos.",
+  "owner": {
+    "name": "Essa",
+    "url": "https://github.com/Essa366"
+  },
+  "plugins": [
+    {
+      "name": "gatepack",
+      "description": "Run gatepack checks before reporting a book file or video as ready to publish.",
+      "source": "./"
+    }
+  ]
+}

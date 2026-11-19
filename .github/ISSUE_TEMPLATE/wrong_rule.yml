@@ -1,0 +1,23 @@
+name: Wrong or outdated rule
+description: A gate disagrees with the platform's current rules
+labels: ["rule update"]
+body:
+  - type: input
+    id: gate
+    attributes:
+      label: Gate
+      placeholder: kdp-metadata
+    validations:
+      required: true
+  - type: input
+    id: link
+    attributes:
+      label: Link to the current rule
+    validations:
+      required: true
+  - type: textarea
+    id: difference
+    attributes:
+      label: What the page says now, and what the gate does
+    validations:
+      required: true
