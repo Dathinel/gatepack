@@ -17,6 +17,14 @@ def milliseconds(token, vtt):
     return ((h * 60 + m) * 60 + s) * 1000 + ms
 
 
+def is_vtt_header(block):
+    signature, *metadata = block.split("\n")
+    if "-->" in block or not re.fullmatch(r"WEBVTT(?:[ \t].*)?", signature):
+        return False
+    return all(re.fullmatch(r"(?:Kind:|Language:|X-TIMESTAMP-MAP=)[ \t]*\S.*", line)
+               for line in metadata)
+
+
 def check(path, overlaps="allow", max_line_length=0):
     path = Path(path)
     if path.suffix.lower() not in {".srt", ".vtt"}:
@@ -30,7 +38,7 @@ def check(path, overlaps="allow", max_line_length=0):
     blocks = re.split(separator, text) if text else []
     findings = []
     if vtt:
-        if blocks and re.fullmatch(r"WEBVTT(?:[ \t][^\n]*)?", blocks[0]) and "-->" not in blocks[0]:
+        if blocks and is_vtt_header(blocks[0]):
             blocks.pop(0)
         else:
             findings.append(Finding("FAIL", "header", "Expected WEBVTT followed by a blank line.", basis))

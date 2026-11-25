@@ -45,3 +45,26 @@ def test_webvtt_arrow_delimiters(tmp_path, left, right, valid):
         assert not findings
     else:
         assert any(f.level == "FAIL" and f.code == "timing" for f in findings)
+
+
+@pytest.mark.parametrize("header", [
+    "WEBVTT\nKind: captions\nLanguage: en",
+    "WEBVTT export\nX-TIMESTAMP-MAP=LOCAL:00:00:00.000,MPEGTS:900000",
+])
+def test_exporter_headers(tmp_path, header):
+    path = tmp_path / "export.vtt"
+    path.write_text(header + "\n\n00:00.000 --> 00:01.000\nText", encoding="utf-8")
+    assert check(path) == ([], {"cues": 1})
+
+
+@pytest.mark.parametrize("header", [
+    "WEBVTTX\nKind: captions",
+    "WEBVTT\nKind: captions\n00:00.000 --> 00:01.000\nLost cue",
+    "WEBVTT\nLanguage: en --> 00:01.000",
+    "WEBVTT\nUnrecognized line",
+])
+def test_header_cannot_swallow_cues_or_arbitrary_text(tmp_path, header):
+    path = tmp_path / "invalid.vtt"
+    path.write_text(header + "\n\n00:02.000 --> 00:03.000\nText", encoding="utf-8")
+    findings, _ = check(path)
+    assert any(f.level == "FAIL" and f.code == "header" for f in findings)
