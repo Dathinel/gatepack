@@ -26,7 +26,8 @@ def check(path, overlaps="allow", max_line_length=0):
     vtt = path.suffix.lower() == ".vtt"
     basis = "standard" if vtt else "heuristic"
     text = path.read_text(encoding="utf-8-sig").rstrip("\n")
-    blocks = re.split(r"\n[ \t]*\n+", text) if text else []
+    separator = r"\n{2,}" if vtt else r"\n[ \t]*\n+"
+    blocks = re.split(separator, text) if text else []
     findings = []
     if vtt:
         if blocks and re.fullmatch(r"WEBVTT(?:[ \t][^\n]*)?", blocks[0]) and "-->" not in blocks[0]:
@@ -61,6 +62,9 @@ def check(path, overlaps="allow", max_line_length=0):
             findings.append(Finding("FAIL", "overlap", f"Cue {count} overlaps an earlier cue.", "heuristic"))
         last_start, latest_end = start, max(latest_end, end)
         for line in lines[1:]:
+            if re.match(r"^[ \t]*[0-9]{2,}:[0-9]{2}(?::[0-9]{2})?[.,][0-9]{3}[ \t]+-->[ \t]+[0-9]+:", line):
+                findings.append(Finding("FAIL", "separator",
+                                        f"Cue {count}: insert a blank line before the next cue.", basis))
             if max_line_length and len(line) > max_line_length:
                 findings.append(Finding("WARN", "line-length", f"Cue {count}: {len(line)} characters exceeds {max_line_length}."))
     if not count:
