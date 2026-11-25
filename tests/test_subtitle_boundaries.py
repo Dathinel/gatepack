@@ -27,3 +27,21 @@ def test_srt_whitespace_separator_and_literal_arrow(tmp_path):
     path.write_text("1\n00:00:00,000 --> 00:00:01,000\nA --> B\n \t\n"
                     "2\n00:00:01,000 --> 00:00:02,000\nC", encoding="utf-8")
     assert check(path) == ([], {"cues": 2})
+
+
+@pytest.mark.parametrize(("left", "right", "valid"), [
+    (" ", " ", True),
+    ("\t", "\t", True),
+    ("\u00a0", " ", False),
+    (" ", "\u00a0", False),
+    (" \u00a0 ", "\t", False),
+])
+def test_webvtt_arrow_delimiters(tmp_path, left, right, valid):
+    path = tmp_path / "delimiters.vtt"
+    path.write_text(f"WEBVTT\n\n00:00.000{left}-->{right}00:02.000 line:90%\nCaption", encoding="utf-8")
+    findings, measured = check(path)
+    assert measured["cues"] == 1
+    if valid:
+        assert not findings
+    else:
+        assert any(f.level == "FAIL" and f.code == "timing" for f in findings)

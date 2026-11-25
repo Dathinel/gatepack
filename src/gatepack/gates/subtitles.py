@@ -45,7 +45,8 @@ def check(path, overlaps="allow", max_line_length=0):
             lines = lines[1:]
         elif not vtt:
             findings.append(Finding("FAIL", "index", f"Cue {count}: expected a numeric SRT index.", basis))
-        fields = lines[0].split() if lines else []
+        timing = lines[0] if lines else ""
+        fields = re.split(r"[ \t]+", timing.strip(" \t")) if vtt else timing.split()
         try:
             if len(fields) < 3 or fields[1] != "-->":
                 raise ValueError
