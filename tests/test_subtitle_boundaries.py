@@ -88,8 +88,17 @@ def test_vtt_metadata_blocks_require_separation(tmp_path, marker, body):
     assert measured["cues"] == 1
 
 
-@pytest.mark.parametrize("identifier", ["NOTE", "STYLE", "REGION"])
+@pytest.mark.parametrize("identifier", ["STYLE", "REGION", "NOTEBOOK"])
 def test_vtt_marker_can_be_cue_identifier(tmp_path, identifier):
     path = tmp_path / "identifier.vtt"
     path.write_text(f"WEBVTT\n\n{identifier}\n00:00.000 --> 00:02.000\nCaption", encoding="utf-8")
     assert check(path) == ([], {"cues": 1})
+
+
+@pytest.mark.parametrize("comment", ["NOTE", "NOTE comment", "NOTE\tcomment"])
+def test_vtt_note_is_never_a_cue_identifier(tmp_path, comment):
+    path = tmp_path / "note.vtt"
+    path.write_text(f"WEBVTT\n\n{comment}\n00:00.000 --> 00:02.000\nCaption", encoding="utf-8")
+    findings, measured = check(path)
+    assert [(f.level, f.code) for f in findings] == [("FAIL", "separator"), ("WARN", "empty")]
+    assert measured["cues"] == 0

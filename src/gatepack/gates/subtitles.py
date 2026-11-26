@@ -46,9 +46,11 @@ def check(path, overlaps="allow", max_line_length=0):
     last_start = latest_end = -1
     for block in blocks:
         lines = block.split("\n")
-        if vtt and not any("-->" in line for line in lines[:2]):
+        if vtt:
+            # NOTE always opens a comment; STYLE and REGION may also be cue identifiers.
             marker = lines[0].rstrip(" \t")
-            if marker in {"STYLE", "REGION"} or re.match(r"^NOTE(?:[ \t]|$)", marker):
+            if re.match(r"NOTE(?:[ \t]|$)", lines[0]) or (
+                    marker in {"STYLE", "REGION"} and not any("-->" in line for line in lines[:2])):
                 if "-->" in block:
                     findings.append(Finding("FAIL", "separator",
                                             "Insert a blank line between the WebVTT block and the next cue.", basis))
